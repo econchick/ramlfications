@@ -589,6 +589,21 @@ def test_resource_type_empty_mapping_headers():
     assert base_res_type.headers[-1].description is None
 
 
+@pytest.fixture(scope="session")
+def inherited_types():
+    raml_file = os.path.join(EXAMPLES, "inherit-resource-types-traits.raml")
+    loaded = load_file(raml_file)
+    config = setup_config(os.path.join(EXAMPLES, "test-config.ini"))
+    config["validate"] = False
+    return pw.parse_raml(loaded, config)
+
+
+def test_resource_type_inherited_type(inherited_types):
+    item = inherited_types.resource_types[3]
+
+    assert item.optional is False
+
+
 #####
 # Test Resources
 #####

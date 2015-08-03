@@ -1,0 +1,212 @@
+#%RAML 0.8
+title: Example Web API
+version: v1
+protocols: [ HTTPS ]
+baseUri: https://{subdomain}.example.com/{version}/{communityPath}
+baseUriParameters:
+  subdomain:
+    description: subdomain of API
+    default: api
+uriParameters:
+ communityPath:
+   displayName: Community Path
+   type: string
+   pattern: ^[a-zA-Z0-9][-a-zA-Z0-9]*$
+   minLength: 1
+mediaType: application/json
+documentation:
+  - title: Example Web API Docs
+    content: |
+      Welcome to the _Example Web API_ demo specification. This is *not* the complete API
+      specification, and is meant for testing purposes within this RAML specification.
+schemas:
+  - Thingy: !include includes/post-thingy-schema.json
+  - ThingyXsd: !include includes/thingy.xsd
+  - ThingyListXsd: !include includes/thingy-list.xsd
+resourceTypes:
+  - base:
+      uriParameters:
+        mediaTypeExtension:
+          enum: [ .json ]
+          description: Use .json to specify application/json media type.
+      get?: &common
+        headers:
+          Accept:
+            description: Is used to set specified media type.
+            type: string
+        body:
+          application/json:
+            schema: {"name": "string"}
+            example: {"name": "Foo Bar"}
+        responses:
+          403:
+            description: |
+              API rate limit exceeded.
+            headers:
+              X-waiting-period:
+                description: |
+                  The number of seconds to wait before you can attempt to make a request again.
+                type: integer
+                required: true
+                minimum: 1
+                maximum: 3600
+                example: 34
+            body:
+              application/json:
+                schema: {"name": "string"}
+                example: {"name": "Foo Bar"}
+      post?: *common
+  - collection:
+      description: A description of the collection resource type
+      post?:
+        formParameters:
+          ids:
+            displayName: IDs
+            description: A list of IDs
+  - item:
+      type: base
+      get:
+        protocols: ["HTTP"]
+        headers:
+          X-another-header:
+            description: Another header
+  - queryParamType:
+      get?:
+        queryParameters:
+          ids:
+            displayName: Some sort of IDs
+            type: string
+            description: A comma-separated list of IDs
+            required: true
+
+
+securitySchemes:
+  - oauth_2_0:
+      description: |
+          Example API supports OAuth 2.0 for authenticating all API requests.
+      type: OAuth 2.0
+      describedBy:
+        headers:
+          Authorization:
+            description: |
+              Used to send a valid OAuth 2 access token.
+            type: string
+          X-Foo-Header:
+            description: a foo header
+            type: string
+        responses:
+          401:
+            description: |
+              Bad or expired token. This can happen if the user revoked a token or
+              the access token has expired. You should re-authenticate the user.
+          403:
+            description: |
+              Bad OAuth request (wrong consumer key, bad nonce, expired
+              timestamp...). Unfortunately, re-authenticating the user won't help here.
+      settings:
+        authorizationUri: https://accounts.example.com/authorize
+        accessTokenUri: https://accounts.example.com/api/token
+        authorizationGrants: [ code, token ]
+        scopes:
+          - "user-public-profile"
+          - "user-email"
+          - "user-activity"
+          - "nsa-level-privacy"
+  - custom_auth:
+      description: custom auth for testing
+      type: Custom Auth
+      describedBy:
+        documentation:
+          - title: foo docs
+            content: foo content
+        mediaType: application/x-www-form-urlencode
+        usage: Some usage description
+        protocols: [HTTPS]
+        queryParameters:
+          fooQParam:
+            description: A foo Query parameter
+            type: string
+        uriParameters:
+          subDomain:
+            description: subdomain of auth
+            default: fooauth
+        formParameters:
+          fooFormParam:
+            description: A foo form parameter
+            type: string
+        body:
+          application/x-www-form-urlencoded:
+            formParameters:
+              anotherFormParam:
+                description: another form parameter
+      settings:
+        foo: bar
+  - no_desc:
+      settings:
+        foo: bar
+traits:
+  - filterable:
+      usage: Some description about using filterable
+      queryParameters:
+        fields:
+          description: A comma-separated list of fields to filter query
+          type: string
+          example: gizmos.items(added_by.id,gizmo(name,href,widget(name,href)))
+          displayName: Fields
+      headers:
+        X-example-header:
+          description: An example of a trait header
+      body:
+        application/json:
+          schema: {"name": "string"}
+          example: {"name": "example body for trait"}
+      responses:
+        200:
+          description: Yay filterable!
+  - paged:
+      description: A description of the paged trait
+      mediaType: application/xml
+      uriParameters:
+        limit:
+          displayName: Limit
+          description: The maximum number of gizmo objects to return
+          type: integer
+          example: 10
+          minimum: 0
+          default: 20
+          maximum: 50
+        offset:
+          displayName: Offset
+          description: The index of the first gizmo to return
+          type: integer
+          example: 5
+          default: 0
+  - formTrait:
+      description: A description of a trait with form parameters
+      mediaType: application/x-www-form-urlencoded
+      formParameters:
+        foo:
+          displayName: Foo
+          description: The Foo Form Field
+          type: string
+          minLength: 5
+          maxLength: 50
+          default: bar
+  - baseUriTrait:
+      description: A description of a trait with base URI parameters
+      baseUriParameters:
+        communityPath:
+          displayName: Community Path trait
+          description: The community path base URI trait
+          type: string
+          example: baz-community
+  - protocolTrait:
+      description: A trait to assign a protocol
+      protocols: ["HTTP"]
+  - parameterTrait:
+      queryParameters:
+        <<tokenName>>:
+          description: A valid <<tokenName>> is required
+/widgets:
+  displayName: several-widgets
+  type: item

@@ -468,7 +468,7 @@ def create_resource_types(raml_data, root):
                         type=type_(),
                         method=method(i),
                         usage=usage(),
-                        optional=optional(),
+                        optional=optional(i),
                         is_=is_(data_union),
                         traits=traits(data_union),
                         secured_by=secured_by(data_union),
@@ -633,9 +633,9 @@ def create_resource_types(raml_data, root):
     def usage():
         return _get(v, "usage")
 
-    def optional():
-        if meth:
-            return "?" in meth
+    def optional(m):
+        if m:
+            return "?" in m
 
     def protocols(data):
         m, r = get_attribute(v, data, "protocols", None)
@@ -722,7 +722,7 @@ def create_resource_types(raml_data, root):
             type=type_(),
             method=method(meth),
             usage=usage(),
-            optional=optional(),
+            optional=optional(meth),
             is_=is_(data),
             traits=traits(data),
             secured_by=secured_by(data),
