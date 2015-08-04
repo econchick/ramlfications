@@ -599,9 +599,21 @@ def inherited_types():
 
 
 def test_resource_type_inherited_type(inherited_types):
-    item = inherited_types.resource_types[3]
+    item = inherited_types.resource_types[-2]
+    put_collection = inherited_types.resource_types[3]
+    widgets = inherited_types.resources[0]
+    post_widgets = inherited_types.resources[1]
+    put_widgets = inherited_types.resources[2]
 
     assert item.optional is False
+    assert widgets.method == "get"
+    assert post_widgets.method == "post"
+    assert len(post_widgets.form_params) == 1
+    assert put_widgets.method == "put"
+    assert put_widgets.form_params is None
+
+    assert put_collection.description.raw == "a PUT method"
+    assert put_collection.form_params is None
 
 
 #####

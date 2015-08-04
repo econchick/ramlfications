@@ -618,7 +618,9 @@ def create_resource_types(raml_data, root):
         return _get(v, "mediaType")
 
     def description():
-        return _get(v, "description")
+        parent_desc = _get(v, "description")
+        _meth = _get(v, meth)
+        return _get(_meth, "description", parent_desc)
 
     def type_():
         return _get(v, "type")
@@ -768,6 +770,11 @@ def create_resources(node, resources, root, parent):
         if k.startswith("/"):
             avail = root.config.get("http_optional")
             methods = [m for m in avail if m in list(iterkeys(v))]
+            if _get(v, "type"):
+                tmp = root.resource_types
+                inherited = [r for r in tmp if r.name == _get(v, "type")]
+                inherited_methods = [r.method for r in inherited]
+                methods.extend(inherited_methods)
             if methods:
                 for m in methods:
                     child = create_node(name=k,
@@ -818,6 +825,7 @@ def create_node(name, raw_data, method, parent, root):
         if type_():
             types = root.resource_types
             r_type = [r for r in types if r.name == type_()]
+            r_type = [r for r in r_type if r.method == method]
             if r_type:
                 if hasattr(r_type[0], attribute):
                     if getattr(r_type[0], attribute) is not None:
