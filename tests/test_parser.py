@@ -856,6 +856,25 @@ def test_resource_response_no_desc():
     assert response.description is None
 
 
+@pytest.fixture(scope="session")
+def inherited_resources():
+    raml_file = os.path.join(EXAMPLES, "resource-type-inherited.raml")
+    loaded_raml = load_file(raml_file)
+    config = setup_config(EXAMPLES + "test-config.ini")
+    config['validate'] = False
+    return pw.parse_raml(loaded_raml, config)
+
+
+def test_resource_inherits_type_optional_post(inherited_resources):
+    assert len(inherited_resources.resources) == 3
+    res = inherited_resources.resources[1]
+    assert res.type == "inheritgetoptionalmethod"
+    assert res.method == "post"
+    assert res.headers is None
+    assert res.query_params is None
+    assert res.description.raw == "post some foobar"
+
+
 #####
 # Test Includes parsing
 #####

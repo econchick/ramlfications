@@ -862,6 +862,7 @@ def create_node(name, raw_data, method, parent, root):
         if type_() and root.resource_types:
             types = root.resource_types
             r_type = [r for r in types if r.name == type_()]
+            r_type = [r for r in r_type if r.method == method]
             if r_type:
                 if hasattr(r_type[0], attribute):
                     if getattr(r_type[0], attribute) is not None:
