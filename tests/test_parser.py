@@ -906,6 +906,21 @@ def test_resource_inherits_type_optional_post(inherited_resources):
     assert res.description.raw == "post some foobar"
 
 
+def test_resource_inherits_type_optional_get(inherited_resources):
+    # make sure that optional resource type methods are not inherited if not
+    # explicitly included in resource (unless no methods defined)
+    assert len(inherited_resources.resources) == 5
+    res = inherited_resources.resources[2]
+    assert res.type == "inheritgetoptionalmethod"
+    assert res.method == "get"
+    assert len(res.headers) == 2
+    assert len(res.query_params) == 1
+
+    desc = ("This description should be inherited when applied to resources "
+            "with get methods")
+    assert res.description.raw == desc
+
+
 def test_resource_inherits_get(inherited_resources):
     assert len(inherited_resources.resources) == 5
     post_res = inherited_resources.resources[3]

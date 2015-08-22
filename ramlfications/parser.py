@@ -659,6 +659,11 @@ def create_resource_types(raml_data, root):
         return _get(v, "mediaType")
 
     def description():
+        # prefer the resourceType method description
+        if meth:
+            method_attr = _get(v, meth)
+            desc = _get(method_attr, "description")
+            return desc or _get(v, "description")
         return _get(v, "description")
 
     def type_():
@@ -1200,6 +1205,10 @@ def create_node(name, raw_data, method, parent, root):
         if raw_data.get(method, {}):
             if raw_data.get(method, {}).get("description"):
                 return raw_data.get(method, {}).get("description")
+            elif type_():
+                assigned = _resource_type_lookup(type_(), root)
+                if hasattr(assigned, "description"):
+                    return assigned.description.raw
         return raw_data.get("description")
 
     def is_():
