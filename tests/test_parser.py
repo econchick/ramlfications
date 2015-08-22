@@ -640,7 +640,7 @@ def test_resource_inherited_properties(resources):
     res = resources[9]
     assert res.base_uri_params[0] == res.resource_type.base_uri_params[0]
 
-    res = resources[-7]
+    res = resources[-6]
     assert res.form_params[0] == res.resource_type.form_params[0]
 
     res = resources[11]
@@ -865,14 +865,80 @@ def inherited_resources():
     return pw.parse_raml(loaded_raml, config)
 
 
+def test_resource_inherits_type(inherited_resources):
+    assert len(inherited_resources.resources) == 5
+    res = inherited_resources.resources[0]
+    assert res.type == "inheritgetmethod"
+    assert res.method == "get"
+    assert len(res.headers) == 1
+    assert len(res.body) == 1
+    assert len(res.responses) == 2
+    assert len(res.query_params) == 1
+
+    h = res.headers[0]
+    assert h.name == "X-Inherited-Header"
+    assert h.description.raw == "This header should be inherited"
+
+    b = res.body[0]
+    assert b.mime_type == "application/json"
+    # lazy checking
+    assert b.schema is not None
+    assert b.example is not None
+
+    q = res.query_params[0]
+    assert q.name == "inherited_param"
+    assert q.display_name == "inherited query parameter for a get method"
+    assert q.type == "string"
+    assert q.description.raw == "description for inherited query param"
+    assert q.example == "fooBar"
+    assert q.min_length == 1
+    assert q.max_length == 50
+    assert q.required is True
+
+
 def test_resource_inherits_type_optional_post(inherited_resources):
-    assert len(inherited_resources.resources) == 3
+    assert len(inherited_resources.resources) == 5
     res = inherited_resources.resources[1]
     assert res.type == "inheritgetoptionalmethod"
     assert res.method == "post"
     assert res.headers is None
     assert res.query_params is None
     assert res.description.raw == "post some foobar"
+
+
+def test_resource_inherits_get(inherited_resources):
+    assert len(inherited_resources.resources) == 5
+    post_res = inherited_resources.resources[3]
+    get_res = inherited_resources.resources[4]
+
+    assert get_res.method == "get"
+    assert len(get_res.headers) == 1
+    assert len(get_res.body) == 1
+    assert len(get_res.responses) == 2
+    assert len(get_res.query_params) == 1
+
+    h = get_res.headers[0]
+    assert h.name == "X-Inherited-Header"
+    assert h.description.raw == "This header should be inherited"
+
+    b = get_res.body[0]
+    assert b.mime_type == "application/json"
+    # lazy checking
+    assert b.schema is not None
+    assert b.example is not None
+
+    q = get_res.query_params[0]
+    assert q.name == "inherited_param"
+    assert q.display_name == "inherited query parameter for a get method"
+    assert q.type == "string"
+    assert q.description.raw == "description for inherited query param"
+    assert q.example == "fooBar"
+    assert q.min_length == 1
+    assert q.max_length == 50
+    assert q.required is True
+
+    assert post_res.method == "post"
+    assert post_res.description.raw == "post some more foobar"
 
 
 #####

@@ -18,7 +18,7 @@ from .parameters import (
     FormParameter, SecurityScheme
 )
 from .raml import RootNode, ResourceNode, ResourceTypeNode, TraitNode
-from .utils import load_schema
+from .utils import load_schema, _resource_type_lookup
 from .config import MEDIA_TYPES
 from .errors import InvalidRAMLError
 
@@ -812,6 +812,12 @@ def create_resources(node, resources, root, parent):
         if k.startswith("/"):
             avail = root.config.get("http_optional")
             methods = [m for m in avail if m in list(iterkeys(v))]
+            if "type" in list(iterkeys(v)):
+                assigned = _resource_type_lookup(v.get("type"), root)
+                if hasattr(assigned, "method"):
+                    if not assigned.optional:
+                        methods.append(assigned.method)
+                        methods = list(set(methods))
             if methods:
                 for m in methods:
                     child = create_node(name=k,
@@ -820,6 +826,18 @@ def create_resources(node, resources, root, parent):
                                         parent=parent,
                                         root=root)
                     resources.append(child)
+            # inherit resource type methods
+            elif "type" in list(iterkeys(v)):
+                if hasattr(assigned, "method"):
+                    method = assigned.method
+                else:
+                    method = None
+                child = create_node(name=k,
+                                    raw_data=v,
+                                    method=method,
+                                    parent=parent,
+                                    root=root)
+                resources.append(child)
             else:
                 child = create_node(name=k,
                                     raw_data=v,

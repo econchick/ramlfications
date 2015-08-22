@@ -65,4 +65,8 @@ resourceTypes:
     headers:
       X-Non-Inherited-Header:
         description: This is a header in addition to what is inherited
-
+/another-post-resource:
+  type: inheritgetmethod
+  description: This resource should also inherit the Resource Type's get method properties
+  post:
+    description: post some more foobar
