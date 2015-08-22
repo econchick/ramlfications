@@ -875,6 +875,10 @@ def test_resource_inherits_type(inherited_resources):
     assert len(res.responses) == 2
     assert len(res.query_params) == 1
 
+    exp_desc = ("This description should be inherited when applied to "
+                "resources")
+    assert res.description.raw == exp_desc
+
     h = res.headers[0]
     assert h.name == "X-Inherited-Header"
     assert h.description.raw == "This header should be inherited"
