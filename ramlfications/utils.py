@@ -191,6 +191,42 @@ def _resource_type_lookup(assigned, root):
     :param root: RAML root object
     """
     res_types = root.resource_types
-    res_type_obj = [r for r in res_types if r.name == assigned]
-    if res_type_obj:
-        return res_type_obj[0]
+    if res_types:
+        res_type_obj = [r for r in res_types if r.name == assigned]
+        if res_type_obj:
+            return res_type_obj[0]
+
+
+NAMED_PARAMS = [
+    "displayName", "description", "type", "enum", "pattern", "minLength",
+    "maxLength", "minimum", "maximum", "example", "default", "required",
+    "repeat"
+]
+
+
+def _resource_type_param_inheritance(inherited, node, method, attribute):
+    """
+    Returns attribute with preference for when resource node explicitly
+    defines it.
+
+    :param inherited: ``ResourceType`` object
+    :param node: ``Resource`` dictionary
+    :param str method: method of resource endpoint
+    :param str attribute: Resource attribute looking to parse
+    """
+    attr = None
+    try:
+        print(node)
+        print(method)
+        print(attribute)
+        attr = node.get(method).get(attribute)
+        print(attr)
+        if attr is None:
+            raise AttributeError
+    except AttributeError:
+        try:
+            if inherited.method == method:
+                attr = getattr(inherited, attribute, None)
+        except AttributeError:
+            pass
+    return attr

@@ -493,6 +493,46 @@ Let's combine all permutations!::
     'get'
 
 
+Example 5
+^^^^^^^^^
+
+Last thing to note is that properties from the inherited Resource Type will *not* overwrite properties of the resource if they are explicitly defined under the resource::
+
+    #%RAML 0.8
+    ---
+    title: Example API
+    baseUri: http://example.com
+    version: v1
+    resourceTypes:
+      - inheritgetmethod:
+          description: get-method resource type example
+          usage: Some sort of usage description
+          get:
+            description: This description should *NOT* be inherited when applied to resources
+            headers:
+              X-Inherited-Header:
+                description: This header should be inherited
+    /a-get-resource:
+      description: Resource inherits from inheritedgetmethod
+      type: inheritgetmethod
+      get:
+        description: This description will actually be used
+
+
+.. code-block:: python
+
+    >>> len(api.resources)
+    1
+    >>> res = api.resources[0]
+    >>> res.name
+    '/a-get-resource'
+    >>> res.type
+    'inheritedgetmethod'
+    >>> # inherited types will not overwrite properties if explicitly defined in resource
+    >>> res.description.raw
+    'This description will actually be used'
+    >>> res.headers
+    [Header(display_name='X-Inherited-Header')]
 
 Check out :doc:`api` for full definition of ``traits`` and ``resources``, and its associated attributes and objects.
 

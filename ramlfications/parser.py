@@ -18,7 +18,8 @@ from .parameters import (
     FormParameter, SecurityScheme
 )
 from .raml import RootNode, ResourceNode, ResourceTypeNode, TraitNode
-from .utils import load_schema, _resource_type_lookup
+from .utils import (load_schema, _resource_type_lookup,
+                    _resource_type_param_inheritance)
 from .config import MEDIA_TYPES
 from .errors import InvalidRAMLError
 
@@ -1202,14 +1203,22 @@ def create_node(name, raw_data, method, parent, root):
 
     def description():
         """Set resource's description."""
-        if raw_data.get(method, {}):
-            if raw_data.get(method, {}).get("description"):
-                return raw_data.get(method, {}).get("description")
-            elif type_():
+        desc = raw_data.get("description")
+        try:
+            desc = raw_data.get(method).get("description")
+            if desc is None:
+                raise AttributeError
+        except AttributeError:
+            if type_():
                 assigned = _resource_type_lookup(type_(), root)
-                if hasattr(assigned, "description"):
-                    return assigned.description.raw
-        return raw_data.get("description")
+                try:
+                    if assigned.method == method:
+                        desc = assigned.description.raw
+                except AttributeError:
+                    pass
+            else:
+                desc = raw_data.get("description")
+        return desc
 
     def is_():
         """Set resource's assigned trait names."""

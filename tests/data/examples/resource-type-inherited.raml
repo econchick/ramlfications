@@ -47,6 +47,15 @@ resourceTypes:
             minLength: 2
             maxLength: 5
             required: true
+  - partialinherit:
+      description: Some aspects of this resource type will be overwritten
+      get:
+        description: Do not inherit this method-level description
+        queryParameters:
+          inherited:
+            description: An inherited parameter
+          overwritten:
+            description: Do not inherit this query param description
 
 
 /a-get-resource:
@@ -70,3 +79,11 @@ resourceTypes:
   description: This resource should also inherit the Resource Type's get method properties
   post:
     description: post some more foobar
+/inherit-no-overwrite:
+  type: partialinherit
+  description: Resource defines some resource type properties
+  get:
+    description: This method-level description should be used
+    queryParameters:
+      overwritten:
+        description: This query param description should be used

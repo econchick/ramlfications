@@ -866,7 +866,7 @@ def inherited_resources():
 
 
 def test_resource_inherits_type(inherited_resources):
-    assert len(inherited_resources.resources) == 5
+    assert len(inherited_resources.resources) == 6
     res = inherited_resources.resources[0]
     assert res.type == "inheritgetmethod"
     assert res.method == "get"
@@ -901,7 +901,7 @@ def test_resource_inherits_type(inherited_resources):
 
 
 def test_resource_inherits_type_optional_post(inherited_resources):
-    assert len(inherited_resources.resources) == 5
+    assert len(inherited_resources.resources) == 6
     res = inherited_resources.resources[1]
     assert res.type == "inheritgetoptionalmethod"
     assert res.method == "post"
@@ -913,7 +913,7 @@ def test_resource_inherits_type_optional_post(inherited_resources):
 def test_resource_inherits_type_optional_get(inherited_resources):
     # make sure that optional resource type methods are not inherited if not
     # explicitly included in resource (unless no methods defined)
-    assert len(inherited_resources.resources) == 5
+    assert len(inherited_resources.resources) == 6
     res = inherited_resources.resources[2]
     assert res.type == "inheritgetoptionalmethod"
     assert res.method == "get"
@@ -926,7 +926,7 @@ def test_resource_inherits_type_optional_get(inherited_resources):
 
 
 def test_resource_inherits_get(inherited_resources):
-    assert len(inherited_resources.resources) == 5
+    assert len(inherited_resources.resources) == 6
     post_res = inherited_resources.resources[3]
     get_res = inherited_resources.resources[4]
 
@@ -958,6 +958,31 @@ def test_resource_inherits_get(inherited_resources):
 
     assert post_res.method == "post"
     assert post_res.description.raw == "post some more foobar"
+
+
+def test_resource_inherited_no_overwrite(inherited_resources):
+    # make sure that if resource inherits a resource type, and explicitly
+    # defines properties that are defined in the resource type, the
+    # properties in the resource take preference
+    assert len(inherited_resources.resources) == 6
+    res = inherited_resources.resources[5]
+
+    assert res.method == "get"
+    assert len(res.query_params) == 2
+
+    desc = "This method-level description should be used"
+    assert res.description.raw == desc
+
+    first_param = res.query_params[0]
+    second_param = res.query_params[1]
+
+    assert first_param.name == "overwritten"
+
+    desc = "This query param description should be used"
+    assert first_param.description.raw == desc
+
+    assert second_param.name == "inherited"
+    assert second_param.description.raw == "An inherited parameter"
 
 
 #####
