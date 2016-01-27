@@ -206,7 +206,7 @@ def assigned_traits(inst, attr, value):
                                "trait, or a dictionary mapping parameter "
                                "values to a trait".format(v))
                         raise InvalidResourceNodeError(msg)
-                elif isinstance(v, str):
+                elif isinstance(v, basestring):
                     if v not in trait_names:
                         msg = (
                             "Trait '{0}' is assigned to '{1}' but is not "
