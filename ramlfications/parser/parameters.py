@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from six import iteritems, itervalues, iterkeys
+from six import iteritems, itervalues, iterkeys, string_types
 
 from ramlfications.config import MEDIA_TYPES
 from ramlfications.parameters import Response, Header, Body, URIParameter
@@ -100,7 +100,7 @@ def create_response(code, data, root, method):
     # when substituting `<<parameters>>`, everything gets turned into
     # a string/unicode. Try to make it an int, and if not, validate.py
     # will certainly catch it.
-    if isinstance(code, basestring):
+    if isinstance(code, string_types):
         try:
             code = int(code)
         except ValueError:

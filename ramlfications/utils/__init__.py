@@ -167,7 +167,7 @@ def _save_updated_mime_types(output_file, mime_types):
     # str -> unicode
     data = json.dumps(mime_types)
     with open(output_file, "w", encoding="UTF-8") as f:
-        f.write(unicode(data))
+        f.write(six.text_type(data))
 
 
 def update_mime_types():

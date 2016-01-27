@@ -443,11 +443,13 @@ def test_inherited_assigned_trait_params_videos(trait_parameters):
     assert len(res.body) == 1
     assert len(res.responses) == 1
 
-    q_param = res.query_params[1]
+    params = sorted(res.query_params)
+
+    q_param = params[1]
     assert q_param.name == "bar_token"
     assert q_param.description.raw == "A valid bar_token is required"
 
-    q_param = res.query_params[0]
+    q_param = params[2]
     assert q_param.name == "numPages"
     desc = "The number of pages to return, not to exceed 30"
     assert q_param.description.raw == desc
@@ -1121,7 +1123,7 @@ def test_resource_assigned_type(resources):
         "mediaTypeExtension", "communityPath", "user_id", "thingy_id"
     ]
     # TODO: uri parameter order isn't preserved...I don't think...
-    assert res_type_uri == exp_res_type_uri
+    assert sorted(res_type_uri) == sorted(exp_res_type_uri)
     assert sorted(res_uri) == sorted(exp_res_uri)
 
     # TODO: add more attributes to test with parameter objects
@@ -1138,8 +1140,8 @@ def test_resource_assigned_type(resources):
     r2 = res.resource_type.responses[0]
     assert r1.code == r2.code
     assert len(res.headers) == 3
-    assert res.headers[0].name == "X-another-header"
     assert res.headers[2].name == "Accept"
+    assert res.headers[0].name == "X-another-header"
     assert res.headers[1].name == "X-example-header"
 
     res = resources[18]

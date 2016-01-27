@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from six import iterkeys
+from six import iterkeys, string_types
 
 from .common import (
     _get, get_inherited_trait_data, substitute_parameters,
@@ -26,7 +26,7 @@ def parse_assigned_dicts(items):
     if isinstance(items, list):
         item_names = []
         for i in items:
-            if isinstance(i, basestring):
+            if isinstance(i, string_types):
                 item_names.append(i)
             elif isinstance(i, dict):
                 name = list(iterkeys(i))[0]
