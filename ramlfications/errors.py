@@ -63,3 +63,7 @@ class MediaTypeError(Exception):
 
 class InvalidVersionError(Exception):
     pass
+
+
+class UnknownTypeError(Exception):
+    pass
