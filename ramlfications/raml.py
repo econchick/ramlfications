@@ -30,6 +30,7 @@ class RootNode(object):
 
     :param dict raw: dict of loaded RAML data
     :param str version: API version
+    :param str raml_version: RAML spec version
     :param str base_uri: API's base URI
     :param list base_uri_params: parameters for base URI, or ``None``. \
         The order of ``base_uri_params`` will follow the order \
@@ -55,6 +56,7 @@ class RootNode(object):
     :param raml_obj: loaded :py:class:`raml.RAMLDict` object
     """
     raw              = attr.ib(repr=False)
+    raml_version     = attr.ib(repr=False)
     version          = attr.ib(repr=False, validator=root_version)
     base_uri         = attr.ib(repr=False, validator=root_base_uri)
     base_uri_params  = attr.ib(repr=False,
@@ -76,6 +78,10 @@ class RootNode(object):
                                validator=attr.validators.instance_of(dict))
     errors           = attr.ib(repr=False)
 
+    # 1.0 attributes.
+    # @todo eventually, we should probably make a separate class for 0.8 and 1.0
+    # as some attributes are not exclusively present in one or the other spec
+    types            = attr.ib(repr=False, validator=root_types)
 
 @attr.s
 class BaseNode(object):

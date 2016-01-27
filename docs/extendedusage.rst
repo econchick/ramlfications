@@ -53,6 +53,8 @@ The Basics
    >>>
    >>> api.version
    v2
+   >>> api.raml_version
+   "0.8"
    >>> api.base_uri
    'https://{domainName}.foo.com/v2'
    >>> api.base_uri_parameters
@@ -197,6 +199,23 @@ Traits
     >>> paged.query_params[0].description
     'The index of the first track to return'
 
+
+RAML1.0 Types
+~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    >>> api.types
+    {'Person': ObjectType(name='Person', properties={'name': Property(type='string')})}
+    >>> person = api.types['Person']
+    >>> person.type
+    'object'
+    >>> person.description
+    'a Person is a type describing human beings'
+    >>> person.properties
+    {'name': Property(type='string')})
+    >>> person.validate({'foo': 'bar'})
+    ValidationError: 'foo' is not in the set of allowed properties ('name'). Missing required property 'name'
 
 Mapping of Properties and Elements from Traits & Resource Types to Resources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

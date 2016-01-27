@@ -25,6 +25,7 @@ from ramlfications.utils.parser import (
 
 from .parameters import create_param_objs
 
+from .types import create_type
 
 def create_root(raml, config):
     """
@@ -73,6 +74,13 @@ def create_root(raml, config):
             schemas.append({list(iterkeys(schema))[0]: value})
         return schemas or None
 
+    def types():
+        _types = _get(raml, "types")
+        if not _types:
+            return None
+        return dict([(k, create_type(k, v))
+            for k, v in iteritems(_types)])
+
     uri = _get(raml, "baseUri", "")
     kwargs = dict(data=raml,
                   uri=uri,
@@ -84,6 +92,7 @@ def create_root(raml, config):
     return RootNode(
         raml_obj=raml,
         raw=raml,
+        raml_version=raml._raml_version,
         title=_get(raml, "title"),
         version=_get(raml, "version"),
         protocols=protocols(),
@@ -95,7 +104,8 @@ def create_root(raml, config):
         schemas=schemas(),
         config=config,
         secured_by=_get(raml, "securedBy"),
-        errors=errors
+        errors=errors,
+        types=types(),
     )
 
 
