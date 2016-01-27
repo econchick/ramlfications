@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 import os
 
 import pytest
-import xmltodict
+# import xmltodict
 
 from ramlfications import parser as pw
 from ramlfications.config import setup_config
@@ -364,11 +364,14 @@ def test_inherited_assigned_trait_params_books(trait_parameters):
     assert len(res.body) == 1
     assert len(res.responses) == 1
 
-    q_param = res.query_params[1]
+    # py3.4 complains even when PYTHONHASHSEED=0
+    params = sorted(res.query_params)
+
+    q_param = params[0]
     assert q_param.name == "access_token"
     assert q_param.description.raw == "A valid access_token is required"
 
-    q_param = res.query_params[0]
+    q_param = params[2]
     assert q_param.name == "numPages"
     desc = "The number of pages to return, not to exceed 10"
     assert q_param.description.raw == desc
@@ -404,11 +407,13 @@ def test_inherited_assigned_trait_params_articles(trait_parameters):
     assert len(res.body) == 1
     assert len(res.responses) == 1
 
-    q_param = res.query_params[1]
+    # py3.4 complains even when PYTHONHASHSEED=0
+    params = sorted(res.query_params)
+    q_param = params[1]
     assert q_param.name == "foo_token"
     assert q_param.description.raw == "A valid foo_token is required"
 
-    q_param = res.query_params[0]
+    q_param = params[3]
     assert q_param.name == "numPages"
     desc = "The number of pages to return, not to exceed 20"
     assert q_param.description.raw == desc
@@ -942,13 +947,15 @@ def test_inherit_resource_type_params(resource_type_parameters):
     assert res.method == "get"
     assert len(res.query_params) == 4
 
-    q_param = res.query_params[2]
+    # py3.4 complains even when PYTHONHASHSEED=0
+    params = sorted(res.query_params)
+    q_param = params[3]
     assert q_param.name == "title"
     desc = ("Return books that have their title matching "
             "the given value")
     assert q_param.description.raw == desc
 
-    q_param = res.query_params[3]
+    q_param = params[1]
     assert q_param.name == "digest_all_fields"
     desc = ("If no values match the value given for title, use "
             "digest_all_fields instead")
@@ -1053,9 +1060,9 @@ def test_resource_properties(resources):
     assert resources[1].parent.name == "/widgets"
     assert resources[1].path == "/widgets/{id}"
 
-    # abs_uri = "http://{subdomain}.example.com/v1/{communityPath}/widgets/{id}"
+    # absuri = "http://{subdomain}.example.com/v1/{communityPath}/widgets/{id}"
     # TODO: FIXME
-    # assert resources[1].absolute_uri == abs_uri
+    # assert resources[1].absolute_uri == absuri
     # assert resources[1].media_type == "application/xml"
     # assert resources[1].protocols == ["HTTP"]
 
@@ -1140,9 +1147,12 @@ def test_resource_assigned_type(resources):
     r2 = res.resource_type.responses[0]
     assert r1.code == r2.code
     assert len(res.headers) == 3
-    assert res.headers[2].name == "Accept"
-    assert res.headers[0].name == "X-another-header"
-    assert res.headers[1].name == "X-example-header"
+
+    # py3.4 complains even when PYTHONHASHSEED=0
+    headers = sorted(res.headers)
+    assert headers[0].name == "Accept"
+    assert headers[1].name == "X-another-header"
+    assert headers[2].name == "X-example-header"
 
     res = resources[18]
     assert res.type == "collection"

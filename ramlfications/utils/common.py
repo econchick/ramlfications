@@ -3,14 +3,16 @@
 
 from __future__ import absolute_import, division, print_function
 
-
-import json
 import re
 
 try:
     from collections import OrderedDict
+    import json
 except ImportError:  # pragma: no cover
     from ordereddict import OrderedDict
+    # implies running python 2.6, and therefore needs simplejson
+    # to maintain dict order when loading json
+    import simplejson as json
 
 from six import iterkeys, iteritems
 

@@ -13,6 +13,9 @@ import sys
 import six
 import xmltodict
 
+from ramlfications.errors import MediaTypeError, LoadRAMLError
+from ramlfications.loader import RAMLLoader
+
 
 PYVER = sys.version_info[:3]
 
@@ -31,9 +34,6 @@ else:
         import six.moves.urllib.error as urllib_error
         URLLIB = True
         SECURE_DOWNLOAD = False
-
-from ramlfications.errors import MediaTypeError, LoadRAMLError
-from ramlfications.loader import RAMLLoader
 
 
 IANA_URL = "https://www.iana.org/assignments/media-types/media-types.xml"
