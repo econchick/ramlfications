@@ -497,7 +497,11 @@ def _create_base_node(name, root, node_type, kwargs, resolve_from=[]):
                 resolve_from.insert(index, "parent")
             else:
                 resolve_from.append("parent")
-        return resolve_inherited_scalar("protocols", resolve_from, **kwargs)
+        ret = resolve_inherited_scalar("protocols", resolve_from, **kwargs)
+
+        if not ret:
+            return [root.base_uri.split("://")[0].upper()]
+        return ret
 
     def headers():
         return create_param_objs("headers", resolve_from, **kwargs)
